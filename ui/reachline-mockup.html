@@ -1,0 +1,760 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reachline</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    color-scheme: light dark;
+    --bg:#F3F8FC;
+    --surface:#FFFFFF;
+    --surface-2:#EAF3FA;
+    --border:#D6E5EF;
+    --border-strong:#9FC0D6;
+    --text:#0B1424;
+    --text-muted:#4E627A;
+    --text-faint:#8398AE;
+
+    --accent:#0090FF;
+    --accent-strong:#0068C4;
+    --accent-soft:#E1F1FF;
+
+    --sev-critical:#FF3B5C; --sev-critical-soft:#FFE3E9;
+    --sev-high:#FF8A00;     --sev-high-soft:#FFECD2;
+    --sev-medium:#E8B400;   --sev-medium-soft:#FFF3C7;
+    --sev-low:#00B8D9;      --sev-low-soft:#D6F6FB;
+    --sev-resolved:#00C48C; --sev-resolved-soft:#D6F8EC;
+
+    --shadow: 0 20px 44px -22px rgba(11,20,36,0.22);
+    --radius: 3px;
+    --font-doc:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+    --font-mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#050B16;
+      --surface:#0B1424;
+      --surface-2:#111E32;
+      --border:#1E3049;
+      --border-strong:#2E4A69;
+      --text:#E8F1FA;
+      --text-muted:#94A9C2;
+      --text-faint:#5D7089;
+
+      --accent:#38C6FF;
+      --accent-strong:#7ADBFF;
+      --accent-soft:rgba(56,198,255,0.14);
+
+      --sev-critical:#FF6B85; --sev-critical-soft:rgba(255,107,133,0.16);
+      --sev-high:#FFAB4D;     --sev-high-soft:rgba(255,171,77,0.16);
+      --sev-medium:#FFDA55;   --sev-medium-soft:rgba(255,218,85,0.16);
+      --sev-low:#40E3F7;      --sev-low-soft:rgba(64,227,247,0.16);
+      --sev-resolved:#3FF0B4; --sev-resolved-soft:rgba(63,240,180,0.16);
+
+      --shadow: 0 20px 44px -22px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#050B16; --surface:#0B1424; --surface-2:#111E32; --border:#1E3049; --border-strong:#2E4A69;
+    --text:#E8F1FA; --text-muted:#94A9C2; --text-faint:#5D7089;
+    --accent:#38C6FF; --accent-strong:#7ADBFF; --accent-soft:rgba(56,198,255,0.14);
+    --sev-critical:#FF6B85; --sev-critical-soft:rgba(255,107,133,0.16);
+    --sev-high:#FFAB4D;     --sev-high-soft:rgba(255,171,77,0.16);
+    --sev-medium:#FFDA55;   --sev-medium-soft:rgba(255,218,85,0.16);
+    --sev-low:#40E3F7;      --sev-low-soft:rgba(64,227,247,0.16);
+    --sev-resolved:#3FF0B4; --sev-resolved-soft:rgba(63,240,180,0.16);
+    --shadow: 0 20px 44px -22px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-doc);}
+  ::selection{background:var(--accent-soft);}
+  button, input, select{font-family:inherit;}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .page{max-width:1180px;margin:0 auto;padding:36px 22px 72px;}
+  .sheet{background:var(--surface);border:1px solid var(--border-strong);box-shadow:var(--shadow);}
+
+  /* ---- Letterhead ---- */
+  .letterhead{border-bottom:2px solid var(--accent);padding:22px 28px 18px;}
+  .letterhead-top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;}
+  .letterhead-id{display:flex;align-items:baseline;gap:12px;}
+  .doc-kind{font-size:10.5px;letter-spacing:0.16em;color:var(--text-faint);text-transform:uppercase;}
+  .doc-name{font-size:26px;font-weight:700;letter-spacing:0.02em;}
+  .doc-sub{display:block;font-size:11.5px;color:var(--text-muted);letter-spacing:0.04em;margin-top:2px;}
+
+  .btn-file{
+    background:var(--accent);color:var(--surface);border:1px solid var(--accent);
+    border-radius:var(--radius);padding:10px 16px;font-family:var(--font-doc);font-weight:700;
+    font-size:12.5px;letter-spacing:0.05em;cursor:pointer;text-transform:uppercase;
+  }
+  .btn-file{box-shadow:0 0 0 1px var(--accent-soft), 0 8px 22px -10px rgba(0,144,255,0.55);}
+  .btn-file:hover{background:var(--accent-strong);border-color:var(--accent-strong);}
+
+  .letterhead-meta{
+    display:flex;gap:0;margin-top:18px;border-top:1px dotted var(--border-strong);padding-top:12px;
+    flex-wrap:wrap;
+  }
+  .meta-field{padding:0 22px 0 0;border-right:1px dotted var(--border-strong);margin-right:22px;}
+  .meta-field:last-child{border-right:none;}
+  .meta-label{display:block;font-size:9.5px;letter-spacing:0.12em;color:var(--text-faint);text-transform:uppercase;margin-bottom:3px;}
+  .meta-value{font-family:var(--font-mono);font-size:12.5px;}
+  select.meta-select{
+    background:none;border:none;border-bottom:1px solid var(--border-strong);color:var(--text);
+    font-family:var(--font-mono);font-size:12.5px;padding:0 0 2px;
+  }
+
+  /* ---- Totals ledger ---- */
+  .totals{display:flex;border-bottom:2px solid var(--accent);}
+  .totals-cell{
+    flex:1;padding:16px 20px;border-right:1px dotted var(--border-strong);
+    display:flex;flex-direction:column;gap:4px;
+  }
+  .totals-cell:last-child{border-right:none;}
+  .totals-label{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-faint);}
+  .totals-value{font-family:var(--font-mono);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .totals-sub{font-size:11px;color:var(--text-muted);}
+  .totals-critical .totals-value{color:var(--sev-critical);}
+  .totals-accent .totals-value{color:var(--accent);}
+  .totals-info .totals-value{color:var(--sev-resolved);}
+
+  /* ---- Toolbar ---- */
+  .toolbar{display:flex;justify-content:space-between;align-items:center;padding:14px 28px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px;}
+  .tabs{display:flex;gap:20px;}
+  .tab{
+    background:none;border:none;padding:4px 0;font-family:var(--font-doc);font-size:12.5px;
+    letter-spacing:0.04em;color:var(--text-muted);cursor:pointer;text-transform:uppercase;
+    border-bottom:2px solid transparent;
+  }
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--text);border-bottom-color:var(--accent);font-weight:700;}
+  .tab .count{font-family:var(--font-mono);color:var(--text-faint);}
+  .tab.active .count{color:var(--accent);}
+  .search input{
+    background:none;border:none;border-bottom:1px solid var(--border-strong);
+    padding:5px 2px;font-family:var(--font-mono);font-size:12.5px;color:var(--text);width:230px;
+  }
+  .search input::placeholder{color:var(--text-faint);}
+
+  /* ---- Ledger table ---- */
+  .table-scroll{overflow-x:auto;}
+  table.ledger{width:100%;border-collapse:collapse;min-width:880px;}
+  table.ledger thead th{
+    text-align:left;font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-faint);
+    padding:10px 28px;border-bottom:1px solid var(--border-strong);background:var(--surface-2);
+  }
+  table.ledger tbody td{padding:13px 28px;border-bottom:1px dotted var(--border);font-size:13px;vertical-align:middle;}
+  table.ledger tbody tr{cursor:pointer;transition:background 0.1s;}
+  table.ledger tbody tr:hover{background:var(--surface-2);}
+
+  .sevcode{font-family:var(--font-mono);font-weight:700;font-size:12px;letter-spacing:0.02em;}
+  .sev-critical{color:var(--sev-critical);}
+  .sev-high{color:var(--sev-high);}
+  .sev-medium{color:var(--sev-medium);}
+  .sev-low{color:var(--sev-low);}
+
+  .component-name{font-family:var(--font-mono);font-weight:600;}
+  .component-purl{display:block;font-family:var(--font-mono);font-size:10.5px;color:var(--text-faint);margin-top:2px;}
+  .cve{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);display:block;}
+  .cve-title{font-size:12.5px;margin-top:1px;}
+
+  .trace{display:inline-flex;align-items:center;gap:6px;font-size:11px;letter-spacing:0.03em;text-transform:uppercase;}
+  .trace-dot{width:6px;height:6px;flex-shrink:0;}
+  .trace-yes .trace-dot{background:var(--sev-critical);border-radius:50%;}
+  .trace-yes{color:var(--sev-critical);}
+  .trace-no .trace-dot{background:none;border:1px solid var(--text-faint);border-radius:50%;}
+  .trace-no{color:var(--text-faint);}
+
+  .stamp{
+    display:inline-block;border:2px solid currentColor;border-radius:2px;padding:2px 9px;
+    font-family:var(--font-mono);font-weight:700;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;
+    transform:rotate(-3deg);
+  }
+  .stamp-pending{color:var(--sev-medium);}
+  .stamp-cleared{color:var(--sev-resolved);}
+  .stamp-resolved{color:var(--text-faint);transform:rotate(-3deg) scale(0.97);opacity:0.85;}
+
+  .filed-cell{color:var(--text-muted);font-family:var(--font-mono);font-size:11.5px;white-space:nowrap;}
+  .chevron{color:var(--text-faint);}
+
+  /* ---- Inspection panel (drawer) ---- */
+  .backdrop{
+    position:fixed;inset:0;background:rgba(20,17,10,0.4);opacity:0;pointer-events:none;
+    transition:opacity 0.18s;z-index:10;
+  }
+  .backdrop.open{opacity:1;pointer-events:auto;}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:480px;max-width:94vw;background:var(--surface);
+    border-left:2px solid var(--accent);box-shadow:var(--shadow);
+    transform:translateX(100%);transition:transform 0.22s ease;z-index:11;
+    display:flex;flex-direction:column;
+  }
+  .drawer.open{transform:translateX(0);}
+  @media (prefers-reduced-motion: reduce){ .drawer{transition:none;} .backdrop{transition:none;} }
+
+  .drawer-head{padding:22px 26px 16px;border-bottom:1px dotted var(--border-strong);position:relative;}
+  .drawer-close{
+    position:absolute;top:18px;right:18px;background:none;border:none;color:var(--text-faint);
+    font-size:20px;line-height:1;cursor:pointer;font-family:var(--font-doc);
+  }
+  .drawer-close:hover{color:var(--text);}
+  .drawer-cve{font-family:var(--font-mono);font-size:12.5px;color:var(--text-muted);margin:12px 0 3px;}
+  .drawer-title{font-size:16px;font-weight:700;line-height:1.4;text-wrap:balance;}
+  .drawer-component{margin-top:10px;font-size:12px;color:var(--text-muted);}
+  .drawer-component .mono{color:var(--text);}
+
+  .drawer-body{padding:20px 26px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:24px;}
+  .section-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);margin-bottom:11px;}
+
+  .route{display:flex;flex-direction:column;}
+  .route-stop{display:flex;gap:12px;align-items:flex-start;position:relative;padding-bottom:16px;}
+  .route-stop:last-child{padding-bottom:0;}
+  .route-marker{
+    width:9px;height:9px;border-radius:50%;background:var(--sev-critical);margin-top:4px;flex-shrink:0;
+    position:relative;z-index:1;
+  }
+  .route-stop:not(:last-child) .route-marker::after{
+    content:"";position:absolute;top:9px;left:3.5px;width:1px;height:26px;
+    background:repeating-linear-gradient(var(--border-strong) 0 3px, transparent 3px 6px);
+  }
+  .route-label{font-family:var(--font-mono);font-size:12px;}
+  .no-route{
+    display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--text-muted);
+  }
+  .no-route .route-marker{background:none;border:1px solid var(--text-faint);}
+
+  .evidence-file{font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);margin-bottom:8px;}
+  pre.code{
+    background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:13px 15px;
+    font-family:var(--font-mono);font-size:12px;line-height:1.65;overflow-x:auto;margin:0;color:var(--text);
+  }
+
+  .declaration-status-row{display:flex;align-items:center;gap:12px;margin-bottom:11px;}
+  .confidence-tag{font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-left:auto;}
+  .declaration{
+    font-size:13px;line-height:1.7;color:var(--text);background:var(--surface-2);
+    border-left:3px solid var(--accent);padding:12px 15px;
+  }
+  .declaration-badge{font-size:9.5px;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent);margin-bottom:6px;display:block;}
+
+  .drawer-actions{border-top:1px dotted var(--border-strong);padding:16px 26px;display:flex;gap:10px;align-items:center;}
+  .btn{border-radius:var(--radius);padding:9px 16px;font-family:var(--font-doc);font-size:12.5px;font-weight:700;letter-spacing:0.03em;text-transform:uppercase;cursor:pointer;border:1px solid transparent;}
+  .btn-countersign{background:var(--accent);color:var(--surface);border-color:var(--accent);}
+  .btn-countersign:hover{background:var(--accent-strong);border-color:var(--accent-strong);}
+  .btn-dispute{background:transparent;border-color:var(--border-strong);color:var(--text);}
+  .btn-dispute:hover{background:var(--surface-2);}
+  .btn-edit{background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:var(--font-doc);}
+  .reviewed-note{padding:16px 26px;border-top:1px dotted var(--border-strong);font-size:12.5px;color:var(--text-muted);}
+  .reviewed-note .mono{color:var(--text);}
+
+  /* ---- Filing modal (New Scan) ---- */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(20,17,10,0.4);opacity:0;pointer-events:none;transition:opacity 0.18s;z-index:20;}
+  .modal-backdrop.open{opacity:1;pointer-events:auto;}
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%);width:480px;max-width:94vw;
+    max-height:86vh;background:var(--surface);border:2px solid var(--accent);box-shadow:var(--shadow);
+    z-index:21;opacity:0;pointer-events:none;transition:opacity 0.18s, transform 0.18s;
+    display:flex;flex-direction:column;
+  }
+  .modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%);}
+  @media (prefers-reduced-motion: reduce){ .modal{transition:none;} .modal-backdrop{transition:none;} }
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:2px solid var(--accent);}
+  .modal-title{font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;}
+  .modal-close{background:none;border:none;font-size:19px;color:var(--text-faint);cursor:pointer;font-family:var(--font-doc);}
+  .modal-close:hover{color:var(--text);}
+  .modal-body{padding:20px 24px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:18px;}
+
+  .field-group{display:flex;flex-direction:column;gap:8px;}
+  .field-group input[type="text"]{
+    background:none;border:none;border-bottom:1px solid var(--border-strong);
+    padding:6px 2px;font-size:13px;color:var(--text);font-family:var(--font-mono);
+  }
+  .field-group input[type="text"]::placeholder{color:var(--text-faint);font-family:var(--font-mono);}
+
+  .radio-row{display:flex;gap:20px;flex-wrap:wrap;}
+  .radio-opt{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:12.5px;letter-spacing:0.02em;}
+  .radio-glyph{font-family:var(--font-mono);}
+  .radio-opt.active{font-weight:700;color:var(--accent);}
+
+  .check-row{display:flex;flex-wrap:wrap;gap:16px;}
+  .check-opt{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;}
+  .check-glyph{font-family:var(--font-mono);width:14px;}
+  .check-opt.active{font-weight:700;}
+
+  .btn-submit{
+    background:var(--accent);color:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);
+    padding:12px;font-family:var(--font-doc);font-weight:700;font-size:12.5px;letter-spacing:0.06em;
+    text-transform:uppercase;cursor:pointer;box-shadow:0 8px 22px -10px rgba(0,144,255,0.55);
+  }
+  .btn-submit:hover{background:var(--accent-strong);}
+  .btn-submit:disabled{opacity:0.45;cursor:not-allowed;}
+
+  .log-list{display:flex;flex-direction:column;gap:9px;font-family:var(--font-mono);font-size:12px;}
+  .log-line{display:flex;align-items:baseline;gap:8px;}
+  .log-name{white-space:nowrap;}
+  .log-fill{flex:1;border-bottom:1px dotted var(--border-strong);position:relative;top:-3px;}
+  .log-status{white-space:nowrap;letter-spacing:0.04em;}
+  .log-queued{color:var(--text-faint);}
+  .log-running{color:var(--accent);}
+  .log-running::before{content:"● ";}
+  .log-done{color:var(--sev-resolved);}
+  .log-done::before{content:"✓ ";}
+
+  .filed-complete{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:6px 0 2px;}
+  .filed-complete-title{font-size:14px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;}
+  .filed-complete-sub{font-size:12.5px;color:var(--text-muted);}
+
+  .toast{
+    position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--accent);
+    box-shadow:var(--shadow);padding:13px 18px;display:flex;align-items:center;gap:10px;
+    font-family:var(--font-mono);font-size:12.5px;transform:translateY(12px);opacity:0;
+    pointer-events:none;transition:transform 0.2s,opacity 0.2s;z-index:22;max-width:320px;
+  }
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast-mark{color:var(--sev-resolved);font-weight:700;}
+
+  @media (max-width: 760px){
+    .totals{flex-wrap:wrap;}
+    .totals-cell{flex:1 1 50%;border-bottom:1px dotted var(--border-strong);}
+    .letterhead-meta{gap:12px 0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="sheet">
+    <header class="letterhead">
+      <div class="letterhead-top">
+        <div class="letterhead-id">
+          <div>
+            <span class="doc-kind">Dependency Manifest</span>
+            <div class="doc-name">REACHLINE</div>
+            <span class="doc-sub">Reachability-verified VEX ledger</span>
+          </div>
+        </div>
+        <button class="btn-file" id="newScanTrigger">+ File New Scan</button>
+      </div>
+      <div class="letterhead-meta">
+        <div class="meta-field">
+          <span class="meta-label">Manifest for</span>
+          <select class="meta-select" id="targetSelect">
+            <option>checkout-service (main)</option>
+            <option>payments-api (main)</option>
+            <option>notifications-worker (main)</option>
+          </select>
+        </div>
+        <div class="meta-field">
+          <span class="meta-label">Commit</span>
+          <span class="meta-value">a3f9c1e</span>
+        </div>
+        <div class="meta-field">
+          <span class="meta-label">Filed</span>
+          <span class="meta-value">2026-09-07 09:42 UTC</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="totals">
+      <div class="totals-cell">
+        <span class="totals-label">Open items</span>
+        <span class="totals-value">7</span>
+        <span class="totals-sub">across 3 manifests</span>
+      </div>
+      <div class="totals-cell totals-critical">
+        <span class="totals-label">Critical, confirmed</span>
+        <span class="totals-value">2</span>
+        <span class="totals-sub">route confirmed to vulnerable code</span>
+      </div>
+      <div class="totals-cell totals-accent">
+        <span class="totals-label">Awaiting clearance</span>
+        <span class="totals-value">4</span>
+        <span class="totals-sub">declaration drafted, unsigned</span>
+      </div>
+      <div class="totals-cell totals-info">
+        <span class="totals-label">Cleared by trace</span>
+        <span class="totals-value">29%</span>
+        <span class="totals-sub">2 of 7 items off any route</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="toolbar">
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-filter="all">All <span class="count">7</span></button>
+          <button class="tab" data-filter="pending">Pending <span class="count">4</span></button>
+          <button class="tab" data-filter="approved">Cleared <span class="count">2</span></button>
+          <button class="tab" data-filter="resolved">Resolved <span class="count">1</span></button>
+        </div>
+        <div class="search"><input type="text" id="searchInput" placeholder="search manifest…"></div>
+      </div>
+      <div class="table-scroll">
+        <table class="ledger">
+          <thead>
+            <tr>
+              <th>Sev</th><th>Component</th><th>Vulnerability</th><th>Trace</th><th>Clearance</th><th>Filed</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="findingsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+<div class="modal-backdrop" id="scanBackdrop"></div>
+<div class="modal" id="scanModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-head">
+    <span class="modal-title">File New Scan</span>
+    <button class="modal-close" id="scanModalClose" aria-label="Close">×</button>
+  </div>
+  <div class="modal-body" id="scanModalBody"></div>
+</div>
+
+<div class="toast" id="toast"><span class="toast-mark">✓</span><span id="toastText"></span></div>
+
+<script>
+  const findings = [
+    { id:'f1', severity:'critical', component:'lodash', version:'4.17.15', purl:'pkg:npm/lodash@4.17.15',
+      cve:'CVE-2020-8203', title:'Prototype Pollution in lodash.merge', reachable:true,
+      path:['import.ts:12 handleImport()','merge.ts:8 mergeConfig()','lodash.merge()'],
+      evidenceFile:'src/utils/merge.ts', evidenceLine:8,
+      evidenceCode:'export function mergeConfig(base, override) {\n  return _.merge({}, base, override); // untrusted body reaches merge\n}',
+      vexStatus:'pending', draftStatus:'Affected',
+      justification:'Untrusted JSON from the /import endpoint reaches lodash.merge() with no key filtering — an attacker-controlled "__proto__" key would pollute the prototype.',
+      confidence:'High confidence', updated:'2026-09-06' },
+
+    { id:'f2', severity:'high', component:'minimist', version:'1.2.5', purl:'pkg:npm/minimist@1.2.5',
+      cve:'CVE-2021-44906', title:'Prototype Pollution in minimist', reachable:false, path:[],
+      evidenceFile:'package-lock.json', evidenceLine:null,
+      evidenceCode:'"minimist": {\n  "version": "1.2.5",\n  "dependency of": "mocha > yargs-parser"\n}',
+      vexStatus:'pending', draftStatus:'Not affected',
+      justification:'minimist is pulled in only by mocha (devDependency) and never appears in the production bundle. No entrypoint in src/ imports it directly or transitively.',
+      confidence:'High confidence', updated:'2026-09-06' },
+
+    { id:'f3', severity:'critical', component:'node-forge', version:'0.10.0', purl:'pkg:npm/node-forge@0.10.0',
+      cve:'CVE-2022-24771', title:'Improper verification of X.509 certificate chain', reachable:true,
+      path:['httpClient.ts:34 verifyPeer()','node-forge/lib/x509.js verify()'],
+      evidenceFile:'src/services/httpClient.ts', evidenceLine:34,
+      evidenceCode:'import forge from \'node-forge\';\n\nexport function verifyPeer(cert, chain) {\n  return forge.pki.verifyCertificateChain(caStore, chain); // reachable on every outbound TLS call\n}',
+      vexStatus:'pending', draftStatus:'Affected',
+      justification:'verifyPeer() is invoked by the shared HTTP client used by every outbound service call — the vulnerable chain-verification routine sits directly on that route.',
+      confidence:'High confidence', updated:'2026-09-05' },
+
+    { id:'f4', severity:'medium', component:'json5', version:'1.0.1', purl:'pkg:npm/json5@1.0.1',
+      cve:'CVE-2022-46175', title:'Prototype Pollution via JSON5.parse', reachable:false, path:[],
+      evidenceFile:'package-lock.json', evidenceLine:null,
+      evidenceCode:'"json5": {\n  "version": "1.0.1",\n  "dependency of": "webpack (build-time only)"\n}',
+      vexStatus:'approved', draftStatus:'Not affected',
+      justification:'json5 is used exclusively by the webpack build pipeline. It never ships in the runtime bundle and never parses request data.',
+      confidence:'High confidence', updated:'2026-09-03', reviewedBy:'anhnb' },
+
+    { id:'f5', severity:'high', component:'axios', version:'0.21.1', purl:'pkg:npm/axios@0.21.1',
+      cve:'CVE-2021-3749', title:'ReDoS via crafted Content-Type header', reachable:true,
+      path:['httpClient.ts:9 request()','axios/lib/helpers/trim.js'],
+      evidenceFile:'src/services/httpClient.ts', evidenceLine:9,
+      evidenceCode:'export async function request(config) {\n  return client.request(config); // response headers pass through axios internals\n}',
+      vexStatus:'pending', draftStatus:'Affected',
+      justification:'All outbound responses pass through axios internals including trim(); an upstream service returning an oversized header could trigger catastrophic backtracking.',
+      confidence:'Medium confidence', updated:'2026-09-06' },
+
+    { id:'f6', severity:'low', component:'semver', version:'5.7.1', purl:'pkg:npm/semver@5.7.1',
+      cve:'CVE-2022-25883', title:'ReDoS in range parsing', reachable:false, path:[],
+      evidenceFile:'package-lock.json', evidenceLine:null,
+      evidenceCode:'"semver": {\n  "version": "5.7.1",\n  "dependency of": "jest-cli (test-only)"\n}',
+      vexStatus:'approved', draftStatus:'Not affected',
+      justification:'semver@5.7.1 is reachable only from the Jest test runner; it is not present in any production entrypoint.',
+      confidence:'High confidence', updated:'2026-09-02', reviewedBy:'anhnb' },
+
+    { id:'f7', severity:'low', component:'ansi-regex', version:'5.0.0', purl:'pkg:npm/ansi-regex@5.0.0',
+      cve:'CVE-2021-3807', title:'ReDoS in ansi-regex', reachable:false, path:[],
+      evidenceFile:'package-lock.json', evidenceLine:null,
+      evidenceCode:'"ansi-regex": {\n  "version": "6.0.1",\n  "resolved by": "npm audit fix on 2026-08-30"\n}',
+      vexStatus:'resolved', draftStatus:'Fixed',
+      justification:'Component was upgraded to 6.0.1 during the last dependency refresh and is no longer present at the vulnerable version.',
+      confidence:'High confidence', updated:'2026-08-30', reviewedBy:'anhnb' },
+  ];
+
+  const sevRank = {critical:0, high:1, medium:2, low:3};
+  const sevCode = {critical:'[CRIT]', high:'[HIGH]', medium:'[MED]', low:'[LOW]'};
+  findings.sort((a,b)=> sevRank[a.severity]-sevRank[b.severity]);
+
+  const body = document.getElementById('findingsBody');
+  const drawer = document.getElementById('drawer');
+  const backdrop = document.getElementById('backdrop');
+  let activeFilter = 'all';
+  let searchTerm = '';
+
+  function stampHtml(f){
+    if(f.vexStatus==='pending') return '<span class="stamp stamp-pending">Pending</span>';
+    if(f.vexStatus==='approved') return '<span class="stamp stamp-cleared">Cleared</span>';
+    return '<span class="stamp stamp-resolved">Resolved</span>';
+  }
+
+  function renderTabs(){
+    const counts = {all:findings.length, pending:0, approved:0, resolved:0};
+    findings.forEach(f=>counts[f.vexStatus]++);
+    document.querySelectorAll('.tab').forEach(t=>{
+      t.querySelector('.count').textContent = counts[t.dataset.filter];
+    });
+  }
+
+  function renderRows(){
+    const rows = findings.filter(f=>{
+      const matchesFilter = activeFilter==='all' || f.vexStatus===activeFilter;
+      const hay = (f.component+' '+f.cve+' '+f.purl).toLowerCase();
+      return matchesFilter && hay.includes(searchTerm.toLowerCase());
+    });
+
+    body.innerHTML = rows.map(f=>`
+      <tr data-id="${f.id}">
+        <td><span class="sevcode sev-${f.severity}">${sevCode[f.severity]}</span></td>
+        <td>
+          <span class="component-name">${f.component}@${f.version}</span>
+          <span class="component-purl">${f.purl}</span>
+        </td>
+        <td>
+          <span class="cve">${f.cve}</span>
+          <span class="cve-title">${f.title}</span>
+        </td>
+        <td>
+          <span class="trace ${f.reachable?'trace-yes':'trace-no'}">
+            <span class="trace-dot"></span>${f.reachable?'Traced':'No trace'}
+          </span>
+        </td>
+        <td>${stampHtml(f)}</td>
+        <td class="filed-cell">${f.updated}</td>
+        <td class="chevron">›</td>
+      </tr>
+    `).join('') || `<tr><td colspan="7" style="padding:32px 28px;text-align:center;color:var(--text-faint);">No items match this filter.</td></tr>`;
+
+    body.querySelectorAll('tr[data-id]').forEach(tr=>{
+      tr.addEventListener('click', ()=> openDrawer(tr.dataset.id));
+    });
+    renderTabs();
+  }
+
+  function routeHtml(f){
+    if(!f.reachable){
+      return `<div class="no-route"><span class="route-marker"></span>
+        <span>No route on file. ${f.component} sits in the dependency tree but no traced path invokes it at runtime.</span></div>`;
+    }
+    return `<div class="route">${f.path.map((n,i)=>`
+      <div class="route-stop">
+        <span class="route-marker"></span>
+        <span class="route-label">${n}</span>
+      </div>`).join('')}</div>`;
+  }
+
+  function openDrawer(id){
+    const f = findings.find(x=>x.id===id);
+    const declBadgeClass = f.draftStatus==='Affected' ? 'sev-critical' : (f.draftStatus==='Fixed' ? 'sev-resolved' : '');
+    const reviewedBlock = f.vexStatus==='pending'
+      ? `<div class="drawer-actions">
+          <button class="btn btn-countersign" data-action="approve">Countersign</button>
+          <button class="btn btn-dispute" data-action="reject">Dispute</button>
+          <button class="btn-edit" data-action="edit">Edit declaration</button>
+        </div>`
+      : `<div class="reviewed-note">${f.vexStatus==='resolved' ? 'Marked resolved' : 'Countersigned'} by <span class="mono">${f.reviewedBy||'system'}</span> on <span class="mono">${f.updated}</span></div>`;
+
+    drawer.innerHTML = `
+      <div class="drawer-head">
+        <button class="drawer-close" aria-label="Close">×</button>
+        <span class="sevcode sev-${f.severity}">${sevCode[f.severity]}</span>
+        <div class="drawer-cve">${f.cve}</div>
+        <div class="drawer-title">${f.title}</div>
+        <div class="drawer-component"><span class="mono">${f.component}@${f.version}</span> &middot; <span class="mono">${f.purl}</span></div>
+      </div>
+      <div class="drawer-body">
+        <div>
+          <div class="section-label">Trace route</div>
+          ${routeHtml(f)}
+        </div>
+        <div>
+          <div class="section-label">Exhibit A — source excerpt</div>
+          <div class="evidence-file">${f.evidenceFile}${f.evidenceLine?':'+f.evidenceLine:''}</div>
+          <pre class="code">${f.evidenceCode.replace(/</g,'&lt;')}</pre>
+        </div>
+        <div>
+          <div class="section-label">Declaration</div>
+          <div class="declaration-status-row">
+            <span class="stamp ${f.draftStatus==='Affected'?'stamp-pending':(f.draftStatus==='Fixed'?'stamp-resolved':'stamp-cleared')}">${f.draftStatus}</span>
+            <span class="confidence-tag">${f.confidence}</span>
+          </div>
+          <div class="declaration">
+            <span class="declaration-badge">Auto-declaration — filed from trace route + source review</span>
+            ${f.justification}
+          </div>
+        </div>
+      </div>
+      ${reviewedBlock}
+    `;
+
+    drawer.querySelector('.drawer-close').addEventListener('click', closeDrawer);
+    const approveBtn = drawer.querySelector('[data-action="approve"]');
+    const rejectBtn = drawer.querySelector('[data-action="reject"]');
+    if(approveBtn) approveBtn.addEventListener('click', ()=>{
+      f.vexStatus = f.draftStatus==='Fixed' ? 'resolved' : 'approved';
+      f.reviewedBy = 'anhnb';
+      renderRows(); closeDrawer();
+    });
+    if(rejectBtn) rejectBtn.addEventListener('click', ()=>{
+      f.draftStatus = 'Affected';
+      f.justification = 'Marked affected on manual review — automated declaration was disputed.';
+      f.vexStatus = 'pending';
+      renderRows(); openDrawer(f.id);
+    });
+
+    drawer.classList.add('open');
+    drawer.setAttribute('aria-hidden','false');
+    backdrop.classList.add('open');
+  }
+
+  function closeDrawer(){
+    drawer.classList.remove('open');
+    drawer.setAttribute('aria-hidden','true');
+    backdrop.classList.remove('open');
+  }
+  backdrop.addEventListener('click', closeDrawer);
+
+  document.querySelectorAll('.tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      activeFilter = tab.dataset.filter;
+      renderRows();
+    });
+  });
+  document.getElementById('searchInput').addEventListener('input', (e)=>{ searchTerm = e.target.value; renderRows(); });
+
+  renderRows();
+
+  /* ---- File New Scan modal ---- */
+  const scanModal = document.getElementById('scanModal');
+  const scanBackdrop = document.getElementById('scanBackdrop');
+  const scanModalBody = document.getElementById('scanModalBody');
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toastText');
+
+  const targetTypes = {
+    path:  { label:'Local path',  placeholder:'/Users/anhnb/projects/checkout-service', showRef:false },
+    git:   { label:'Git repo',    placeholder:'https://github.com/org/checkout-service', showRef:true },
+    image: { label:'Image ref',   placeholder:'myregistry/checkout-service:1.4.2', showRef:false },
+  };
+  const availablePlugins = [
+    { id:'syft',  label:'SYFT',        default:true },
+    { id:'grype', label:'GRYPE',       default:true },
+    { id:'trivy', label:'TRIVY',       default:false },
+    { id:'osv',   label:'OSV-SCANNER', default:false },
+  ];
+
+  let currentType = 'path';
+  let activePlugins = new Set(availablePlugins.filter(p=>p.default).map(p=>p.id));
+
+  function renderScanForm(){
+    scanModalBody.innerHTML = `
+      <div class="field-group">
+        <span class="section-label">Target type</span>
+        <div class="radio-row" id="targetTypeSeg">
+          ${Object.entries(targetTypes).map(([key,t])=>
+            `<span class="radio-opt ${key===currentType?'active':''}" data-type="${key}">
+              <span class="radio-glyph">${key===currentType?'(•)':'( )'}</span>${t.label}
+            </span>`
+          ).join('')}
+        </div>
+      </div>
+      <div class="field-group">
+        <span class="section-label">${targetTypes[currentType].label}</span>
+        <input type="text" id="targetInput" placeholder="${targetTypes[currentType].placeholder}">
+      </div>
+      <div class="field-group" id="refFieldGroup" style="${targetTypes[currentType].showRef?'':'display:none;'}">
+        <span class="section-label">Branch / ref</span>
+        <input type="text" id="refInput" placeholder="main">
+      </div>
+      <div class="field-group">
+        <span class="section-label">Plugins</span>
+        <div class="check-row" id="pluginChecks">
+          ${availablePlugins.map(p=>
+            `<span class="check-opt ${activePlugins.has(p.id)?'active':''}" data-plugin="${p.id}">
+              <span class="check-glyph">${activePlugins.has(p.id)?'[x]':'[ ]'}</span>${p.label}
+            </span>`
+          ).join('')}
+        </div>
+      </div>
+      <button class="btn-submit" id="startScanBtn" ${activePlugins.size===0?'disabled':''}>Submit manifest for scan</button>
+    `;
+    scanModalBody.querySelectorAll('.radio-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{ currentType = opt.dataset.type; renderScanForm(); });
+    });
+    scanModalBody.querySelectorAll('.check-opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        const id = opt.dataset.plugin;
+        activePlugins.has(id) ? activePlugins.delete(id) : activePlugins.add(id);
+        renderScanForm();
+      });
+    });
+    document.getElementById('startScanBtn').addEventListener('click', runScan);
+  }
+
+  function runScan(){
+    const selected = availablePlugins.filter(p=>activePlugins.has(p.id));
+    scanModalBody.innerHTML = `
+      <div class="log-list" id="progressList">
+        ${selected.map(p=>`
+          <div class="log-line" data-plugin="${p.id}">
+            <span class="log-name">${p.label}</span>
+            <span class="log-fill"></span>
+            <span class="log-status log-queued" data-status>QUEUED</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    selected.forEach((p, i)=>{
+      const row = scanModalBody.querySelector(`[data-plugin="${p.id}"] [data-status]`);
+      setTimeout(()=>{ row.textContent='RUNNING'; row.className='log-status log-running'; }, i*350);
+      setTimeout(()=>{ row.textContent='DONE'; row.className='log-status log-done'; }, 900 + i*450);
+    });
+
+    const totalTime = 900 + selected.length*450 + 300;
+    setTimeout(()=>{
+      scanModalBody.innerHTML = `
+        <div class="filed-complete">
+          <div class="filed-complete-title">Manifest processed</div>
+          <div class="filed-complete-sub">7 items logged, correlated across ${selected.length} plugin${selected.length>1?'s':''}</div>
+        </div>
+        <button class="btn-submit" id="viewResultsBtn">Review ledger</button>
+      `;
+      document.getElementById('viewResultsBtn').addEventListener('click', ()=>{
+        closeScanModal();
+        showToast(`Scan filed — 7 items added to ledger`);
+      });
+    }, totalTime);
+  }
+
+  function openScanModal(){
+    currentType = 'path';
+    activePlugins = new Set(availablePlugins.filter(p=>p.default).map(p=>p.id));
+    renderScanForm();
+    scanModal.classList.add('open'); scanBackdrop.classList.add('open'); scanModal.setAttribute('aria-hidden','false');
+  }
+  function closeScanModal(){
+    scanModal.classList.remove('open'); scanBackdrop.classList.remove('open'); scanModal.setAttribute('aria-hidden','true');
+  }
+  let toastTimer;
+  function showToast(msg){
+    toastText.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> toast.classList.remove('show'), 4000);
+  }
+  document.getElementById('newScanTrigger').addEventListener('click', openScanModal);
+  document.getElementById('scanModalClose').addEventListener('click', closeScanModal);
+  scanBackdrop.addEventListener('click', closeScanModal);
+</script>
+</body>
+</html>
