@@ -604,8 +604,11 @@
       renderRows(); closeDrawer();
     });
     if(rejectBtn) rejectBtn.addEventListener('click', ()=>{
-      f.draftStatus = 'Affected';
-      f.justification = 'Marked affected on manual review — automated declaration was disputed.';
+      const wasAffected = f.draftStatus === 'Affected';
+      f.draftStatus = wasAffected ? 'Not affected' : 'Affected';
+      f.justification = wasAffected
+        ? 'Disputed on manual review — reviewer found no valid path to the vulnerable code; overriding the automated "affected" draft.'
+        : 'Disputed on manual review — reviewer found a path the automated draft missed; marked affected pending a fix.';
       f.vexStatus = 'pending';
       renderRows(); openDrawer(f.id);
     });
