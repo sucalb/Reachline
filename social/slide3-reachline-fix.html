@@ -1,0 +1,64 @@
+<title>Reachline Fix</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mulish:wght@400;500;600;700&display=swap">
+<style>
+  :root{ --bg:#F2FBF8; --surface:#FFFFFF; --border:#CFEFE4; --text:#0F2A22; --text-muted:#4B7A6C;
+    --font-head:'Baloo 2',ui-rounded,system-ui,sans-serif; --font-body:'Mulish',system-ui,sans-serif;
+    --c1:#0EA5A0; --c2:#EC4899; --c3:#22C55E; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);} svg{max-width:100%;height:auto;display:block;}
+</style>
+<svg viewBox="0 0 1080 1080" role="img" aria-label="Reachline's fix: trace whether the vulnerable code actually runs, have AI draft the explanation with evidence, and let a person sign off — turning 47 alerts into the few that truly need attention.">
+  <rect x="0" y="0" width="1080" height="1080" fill="var(--bg)"/>
+  <text x="80" y="110" font-family="var(--font-head)" font-size="34" font-weight="600" fill="var(--text-muted)">WHAT DOES REACHLINE DO DIFFERENTLY?</text>
+  <text x="80" y="168" font-family="var(--font-head)" font-size="46" font-weight="800" fill="var(--text)">Filter down to what matters</text>
+
+  <!-- Step 1: Trace -->
+  <g>
+    <rect x="80" y="230" width="920" height="200" rx="22" fill="var(--surface)" stroke="var(--c1)" stroke-width="3.5"/>
+    <circle cx="180" cy="330" r="52" fill="var(--c1)"/>
+    <g transform="translate(180,330)" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M0,-20 C10,-20 18,-12 18,-2 C18,12 0,24 0,24 C0,24 -18,12 -18,-2 C-18,-12 -10,-20 0,-20 Z"/>
+      <path d="M-6,-2 L-2,4 L8,-8" stroke-width="3.2"/>
+    </g>
+    <text x="270" y="310" font-family="var(--font-head)" font-size="32" font-weight="700" fill="var(--text)">1. TRACE</text>
+    <text x="270" y="345" font-family="var(--font-body)" font-size="23" fill="var(--text-muted)">Does your code actually call</text>
+    <text x="270" y="373" font-family="var(--font-body)" font-size="23" fill="var(--text-muted)">the vulnerable part?</text>
+  </g>
+
+  <!-- Step 2: AI explains -->
+  <g>
+    <rect x="80" y="450" width="920" height="200" rx="22" fill="var(--surface)" stroke="var(--c2)" stroke-width="3.5"/>
+    <circle cx="180" cy="550" r="52" fill="var(--c2)"/>
+    <g transform="translate(180,550)">
+      <rect x="-20" y="-15" width="40" height="26" rx="7" fill="none" stroke="white" stroke-width="4"/>
+      <polygon points="-6,11 -11,20 2,11" fill="white"/>
+      <circle cx="-9" cy="-2" r="2.4" fill="white"/>
+      <circle cx="0" cy="-2" r="2.4" fill="white"/>
+      <circle cx="9" cy="-2" r="2.4" fill="white"/>
+    </g>
+    <text x="270" y="530" font-family="var(--font-head)" font-size="32" font-weight="700" fill="var(--text)">2. AI EXPLAINS</text>
+    <text x="270" y="565" font-family="var(--font-body)" font-size="23" fill="var(--text-muted)">Drafts why it's safe or risky,</text>
+    <text x="270" y="593" font-family="var(--font-body)" font-size="23" fill="var(--text-muted)">with evidence attached</text>
+  </g>
+
+  <!-- Step 3: Human review -->
+  <g>
+    <rect x="80" y="670" width="920" height="200" rx="22" fill="var(--surface)" stroke="var(--c3)" stroke-width="3.5"/>
+    <circle cx="180" cy="770" r="52" fill="var(--c3)"/>
+    <g transform="translate(180,770)" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="0" cy="-11" r="8" fill="white" stroke="none"/>
+      <path d="M-13,18 C-13,4 13,4 13,18" stroke-width="4"/>
+      <path d="M4,10 L9,16 L20,2" stroke-width="4.2"/>
+    </g>
+    <text x="270" y="750" font-family="var(--font-head)" font-size="32" font-weight="700" fill="var(--text)">3. HUMAN SIGNS OFF</text>
+    <text x="270" y="785" font-family="var(--font-body)" font-size="23" fill="var(--text-muted)">The final call always belongs</text>
+    <text x="270" y="813" font-family="var(--font-body)" font-size="23" fill="var(--text-muted)">to a person, not the AI</text>
+  </g>
+
+  <!-- Result banner -->
+  <g>
+    <rect x="80" y="920" width="920" height="110" rx="22" fill="var(--c3)"/>
+    <text x="540" y="965" text-anchor="middle" font-family="var(--font-head)" font-size="26" font-weight="700" fill="white">47 alerts</text>
+    <text x="540" y="1000" text-anchor="middle" font-family="var(--font-head)" font-size="26" font-weight="700" fill="white">→ down to the few that actually need you</text>
+  </g>
+</svg>

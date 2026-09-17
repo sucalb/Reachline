@@ -1,0 +1,59 @@
+<title>The Alert Pile</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mulish:wght@400;500;600;700&display=swap">
+<style>
+  :root{ --bg:#FFF8F3; --surface:#FFFFFF; --border:#F3D9C4; --text:#2A1E16; --text-muted:#8A6A54;
+    --font-head:'Baloo 2',ui-rounded,system-ui,sans-serif; --font-body:'Mulish',system-ui,sans-serif;
+    --alert:#F97316; --alert-dark:#C2410C; }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);} svg{max-width:100%;height:auto;display:block;}
+</style>
+<svg viewBox="0 0 1080 1080" role="img" aria-label="The problem after enabling SCA: dozens of alerts with no clear signal for which are actually exploitable, which sit unused in the dependency tree, and who has time to review them all.">
+  <rect x="0" y="0" width="1080" height="1080" fill="var(--bg)"/>
+
+  <!-- scattered faded flags for clutter -->
+  <g opacity="0.16" fill="var(--alert)">
+    <g transform="translate(870,90) rotate(12)"><rect x="-2" y="-14" width="4" height="34"/><path d="M2,-14 L26,-6 L2,2 Z"/></g>
+    <g transform="translate(950,180) rotate(-8)"><rect x="-2" y="-14" width="4" height="34"/><path d="M2,-14 L26,-6 L2,2 Z"/></g>
+    <g transform="translate(80,140) rotate(-15)"><rect x="-2" y="-14" width="4" height="34"/><path d="M2,-14 L26,-6 L2,2 Z"/></g>
+    <g transform="translate(150,60) rotate(20)"><rect x="-2" y="-14" width="4" height="34"/><path d="M2,-14 L26,-6 L2,2 Z"/></g>
+    <g transform="translate(1000,60) rotate(5)"><rect x="-2" y="-14" width="4" height="34"/><path d="M2,-14 L26,-6 L2,2 Z"/></g>
+  </g>
+
+  <text x="80" y="110" font-family="var(--font-head)" font-size="34" font-weight="600" fill="var(--text-muted)">SO WHAT HAPPENS AFTER SCA?</text>
+
+  <text x="540" y="330" text-anchor="middle" font-family="var(--font-head)" font-size="220" font-weight="800" fill="var(--alert)">47</text>
+  <text x="540" y="385" text-anchor="middle" font-family="var(--font-head)" font-size="34" font-weight="700" fill="var(--alert-dark)">alerts. High and Critical included.</text>
+
+  <!-- Row 1 -->
+  <g>
+    <rect x="80" y="470" width="920" height="150" rx="20" fill="var(--surface)" stroke="var(--border)" stroke-width="3"/>
+    <circle cx="170" cy="545" r="42" fill="var(--alert)"/>
+    <text x="170" y="558" text-anchor="middle" font-family="var(--font-head)" font-size="46" font-weight="800" fill="white">?</text>
+    <text x="245" y="537" font-family="var(--font-head)" font-size="28" font-weight="700" fill="var(--text)">Which ones are ACTUALLY exploitable?</text>
+    <text x="245" y="572" font-family="var(--font-body)" font-size="22" fill="var(--text-muted)">A high CVSS score doesn't mean it's dangerous in your code</text>
+  </g>
+
+  <!-- Row 2 -->
+  <g>
+    <rect x="80" y="640" width="920" height="150" rx="20" fill="var(--surface)" stroke="var(--border)" stroke-width="3"/>
+    <circle cx="170" cy="715" r="42" fill="var(--alert)"/>
+    <g transform="translate(170,715)" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="0" cy="0" r="15"/>
+      <path d="M0,-8 L0,0 L6,5"/>
+    </g>
+    <text x="245" y="707" font-family="var(--font-head)" font-size="28" font-weight="700" fill="var(--text)">Which ones just sit there, never called?</text>
+    <text x="245" y="742" font-family="var(--font-body)" font-size="22" fill="var(--text-muted)">Not every dependency actually runs</text>
+  </g>
+
+  <!-- Row 3 -->
+  <g>
+    <rect x="80" y="810" width="920" height="150" rx="20" fill="var(--surface)" stroke="var(--border)" stroke-width="3"/>
+    <circle cx="170" cy="885" r="42" fill="var(--alert)"/>
+    <g transform="translate(170,885)" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="0" cy="-6" r="9" fill="white" stroke="none"/>
+      <path d="M-13,15 C-13,4 13,4 13,15" stroke-width="4.5"/>
+    </g>
+    <text x="245" y="877" font-family="var(--font-head)" font-size="28" font-weight="700" fill="var(--text)">Who reviews all 47 of these every week?</text>
+    <text x="245" y="912" font-family="var(--font-body)" font-size="22" fill="var(--text-muted)">SCA is great at finding — not at prioritizing</text>
+  </g>
+</svg>
